@@ -38,6 +38,8 @@ class Order(Base):
     payment_platform = Column(Enum(PaymentPlatform), nullable=False)
     fee = Column(Float, default=0.0)
     external_transaction_id = Column(String, nullable=False)
+    user_names = Column(ARRAY(String), nullable=True)
+    user_amounts = Column(ARRAY(Float), nullable=True)
 
     def __repr__(self):
         return f"<Order {self.sqsp_transaction_id}>"

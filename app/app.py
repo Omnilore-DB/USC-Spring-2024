@@ -67,10 +67,10 @@ def load_all_models() -> None:
     model_paths.sort()
 
     for path in model_paths:
-        module_name = path_to_import(str(path))
+        module_name = path_to_import(str(path).replace("\\", "/"))
         __import__(module_name)
 
-    load_past_tables()
+    # load_past_tables()
 
 
 def get_app() -> FastAPI:

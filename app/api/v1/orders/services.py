@@ -143,6 +143,8 @@ def create_initial_order_object(transaction: Document):
         fee=transaction.total.value - transaction.totalNetPayment.value,
         external_transaction_id=transaction.payments[0].externalTransactionId,
         sqsp_transaction_id=transaction.id,
+        user_names=[],
+        user_amounts=[],
     )
 
     return new_order
@@ -175,6 +177,8 @@ def create_donation_order_and_upsert_user(
             phone,
         )
     new_order.user_emails.append(user.pk)
+    new_order.user_names.append(user.name)
+    new_order.user_amounts.append(transaction.total.value)
 
     return new_order
 
@@ -259,6 +263,8 @@ def create_product_order_and_upsert_users(
         new_order.user_emails.append(user.email)
         # add sku to order
         new_order.skus.append(line_item.sku)
+        new_order.user_names.append(user.name)
+        new_order.user_amounts.append(line_item.unitPricePaid.value)
 
     return new_order
 
