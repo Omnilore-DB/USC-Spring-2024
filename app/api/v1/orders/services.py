@@ -112,6 +112,61 @@ def parse_customizations(customizations):
     )
 
 
+def parse_customizations_member(customizations):
+    first_name = ""
+    last_name = ""
+    name = ""
+    phone = ""
+    email = ""
+    street_address = ""
+    city = ""
+    state = ""
+    postal_code = ""
+    emergency_contact = ""
+    emergency_contact_phone = ""
+
+    for customization in customizations:
+        if customization.label == "First Name":
+            first_name = customization.value if customization.value else ""
+        elif customization.label == "Last Name":
+            last_name = customization.value if customization.value else ""
+        elif customization.label == "Name":
+            name = customization.value if customization.value else ""
+        elif customization.label == "Phone":
+            phone = customization.value if customization.value else ""
+        elif customization.label == "Email":
+            email = customization.value if customization.value else ""
+        elif customization.label == "Address":
+            street_address = customization.value if customization.value else ""
+        elif customization.label == "City":
+            city = customization.value if customization.value else ""
+        elif customization.label == "State":
+            state = customization.value if customization.value else ""
+        elif customization.label == "Postal Code":
+            postal_code = customization.value if customization.value else ""
+        elif customization.label == "Emergency Contact Name":
+            emergency_contact = customization.value if customization.value else ""
+        elif customization.label == "Emergency Contact Phone":
+            emergency_contact_phone = customization.value if customization.value else ""
+
+    if not first_name and name and " " in name:
+        first_name = name.split()[0]
+        last_name = name.split()[1]
+
+    return (
+        first_name,
+        last_name,
+        phone,
+        email.lower(),
+        street_address,
+        city,
+        state,
+        postal_code,
+        emergency_contact,
+        emergency_contact_phone,
+    )
+
+
 def parse_profile(profile: Profile):
     name = profile.firstName + " " + profile.lastName
 
@@ -257,6 +312,41 @@ def create_product_order_and_upsert_users(
             is_member=is_member,
             date_renewed=date_renewed,
             date_expired=date_expired,
+        )
+        if " " in name:
+            first_name = name.split()[0]
+            last_name = name.split()[1]
+        else:
+            first_name = name
+            last_name = ""
+
+        (
+            first_name,
+            last_name,
+            phone,
+            email,
+            street_address,
+            city,
+            state,
+            postal_code,
+            emergency_contact,
+            emergency_contact_phone,
+        ) = parse_customizations_member(line_item.customizations)
+        member = user_services.upsert_member(
+            session=session,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            street_address=street_address,
+            city=city,
+            state=state,
+            zip=postal_code,
+            phone=phone,
+            emergency_contact=emergency_contact,
+            emergency_contact_phone=emergency_contact_phone,
+            date_renewed=date_renewed,
+            date_expired=date_expired,
+            is_member=is_member,
         )
 
         # associate user with order

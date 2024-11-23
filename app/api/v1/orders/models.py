@@ -14,6 +14,7 @@ from app.database import Base
 class PaymentPlatform(str, enum.Enum):
     STRIPE = "STRIPE"
     PAYPAL = "PAYPAL"
+    MAIL = "MAIL"
 
 
 class Order(Base):
